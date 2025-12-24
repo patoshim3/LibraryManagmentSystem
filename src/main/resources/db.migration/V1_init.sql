@@ -1,7 +1,7 @@
 CREATE TABLE authors(
    id BIGSERIAL PRIMARY KEY,
    name VARCHAR(255) NOT NULL,
-   authorBiography TEXT
+   biography TEXT
 );
 
 CREATE TABLE books(
