@@ -3,9 +3,9 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_DB: librarydb
+      POSTGRES_DB: postgresms
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: patima261219
     ports:
       - "5432:5432"
     volumes:
@@ -17,12 +17,12 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/librarydb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgresms
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_DATASOURCE_PASSWORD: patima261219
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
     ports:
-      - "8080:8080"
+      - "8081:8081"
 
 volumes:
   postgres_data:
