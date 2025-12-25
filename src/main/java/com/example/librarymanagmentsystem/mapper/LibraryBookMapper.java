@@ -2,8 +2,7 @@ package com.example.librarymanagmentsystem.mapper;
 
 import com.example.librarymanagmentsystem.dto.LibraryBookDto;
 import com.example.librarymanagmentsystem.Model.LibraryBook;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -21,4 +20,7 @@ public interface LibraryBookMapper {
     LibraryBook toEntity(LibraryBookDto dto);
 
     List<LibraryBookDto> toDtoList(List<LibraryBook> libraryBooks);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromDto(LibraryBookDto dto, @MappingTarget LibraryBook libraryBook);
+
 }
