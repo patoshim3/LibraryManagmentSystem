@@ -10,30 +10,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "books")
+@Table(name = "libraries")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Book {
+public class Library {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    private String name;
+    private String address;
 
-    private String isbn;
-
-    @Column(name = "publication_year")
-    private Integer publicationYear;
-
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-    private Author author;
-
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "library")
     private Set<LibraryBook> libraryBooks = new HashSet<>();
-
 }
