@@ -2,7 +2,9 @@ SELECT * FROM authors;
 SELECT * FROM books;
 SELECT * FROM libraries;
 SELECT * FROM library_books;
-
+SELECT * FROM t_user;
+SELECT * FROM t_permission;
+SELECT * FROM t_user_permissions;
 
 SELECT b.id, b.title, a.name AS author_name
 FROM books b

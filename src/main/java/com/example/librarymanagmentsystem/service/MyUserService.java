@@ -41,19 +41,12 @@ public class MyUserService implements UserDetailsService {
 
     public void register(UserModel model) {
         UserModel check = userRepository.findByEmail(model.getEmail());
-        if (check != null) {
-            throw new IllegalArgumentException("User with this email already exists");
+        if (check == null){
+            model.setPassword(passwordEncoder.encode(model.getPassword()));
+            List<Permission> permissions = List.of(permissionRepository.findByName("ROLE_USER"));
+
+            model.setPermissions(permissions);
+            userRepository.save(model);
         }
-
-        model.setPassword(passwordEncoder.encode(model.getPassword()));
-
-        Permission userRole = permissionRepository.findByName("ROLE_USER");
-        if (userRole == null) {
-            throw new IllegalStateException("ROLE_USER permission not found in DB");
-        }
-
-        model.setPermissions(List.of(userRole));
-
-        userRepository.save(model);
     }
 }

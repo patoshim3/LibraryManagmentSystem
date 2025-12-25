@@ -11,22 +11,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "t_user")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "t_user")
 public class UserModel implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
     private Long id;
-
-    @Column(name = "t_email", unique = true, nullable = false)
+    private String username;
     private String email;
-
-    @Column(name = "t_password", nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -39,9 +35,7 @@ public class UserModel implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return permissions.stream()
-                .map(p -> new SimpleGrantedAuthority(p.getName()))
-                .collect(Collectors.toList());
+        return permissions;
     }
 
     @Override

@@ -2,20 +2,24 @@ package com.example.librarymanagmentsystem.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
-@Table(name = "t_permission")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Permission {
+@Table(name = "t_permission")
+public class Permission implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "permission_id")
     private Long id;
 
-    @Column(name = "t_name", unique = true, nullable = false)
     private String name;
+
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 }
