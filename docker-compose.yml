@@ -20,9 +20,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgresms
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: patima261219
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
-      - "8081:8081"
+      - "8080:8080"
 
 volumes:
   postgres_data:
