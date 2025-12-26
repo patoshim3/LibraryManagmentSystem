@@ -19,7 +19,19 @@ public class BookController {
     @GetMapping("/all")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<?> getAll() {
+
         return new ResponseEntity<>(bookService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public ResponseEntity<?> getBookById(@PathVariable("id") Long id) {
+        BookDto bookDto = bookService.getBookById(id);
+        if (bookDto != null) {
+            return new ResponseEntity<>(bookDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Book not found with id: " + id, HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/add")
