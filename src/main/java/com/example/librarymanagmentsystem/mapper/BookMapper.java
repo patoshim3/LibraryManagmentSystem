@@ -15,7 +15,7 @@ public interface BookMapper {
     @Mapping(target = "authorName", source = "author.name")
     BookDto toDto(Book book);
 
-    @Mapping(target = "author", ignore = true)  // автор устанавливается отдельно по ID
+    @Mapping(target = "author", ignore = true)
     Book toEntity(BookDto dto);
 
     List<BookDto> toDtoList(List<Book> books);
