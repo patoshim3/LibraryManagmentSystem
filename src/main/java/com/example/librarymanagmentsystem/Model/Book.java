@@ -33,7 +33,7 @@ public class Book {
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<LibraryBook> libraryBooks = new HashSet<>();
 
 }
