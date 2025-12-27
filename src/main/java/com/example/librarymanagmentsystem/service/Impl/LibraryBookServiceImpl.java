@@ -37,9 +37,7 @@ public class LibraryBookServiceImpl implements LibraryBookService {
 
     @Override
     public void addLibraryBook(LibraryBookDto dto) {
-        LibraryBook entity = new LibraryBook(); // Лучше создать вручную
-
-        // Загружаем реальные сущности из БД
+        LibraryBook entity = new LibraryBook();
         Library library = libraryRepository.findById(dto.getLibraryId())
                 .orElseThrow(() -> new IllegalArgumentException("Библиотека с id " + dto.getLibraryId() + " не найдена"));
 
