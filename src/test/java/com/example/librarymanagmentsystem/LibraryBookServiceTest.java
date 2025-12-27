@@ -1,7 +1,11 @@
 package com.example.librarymanagmentsystem;
 
+import com.example.librarymanagmentsystem.dto.BookDto;
 import com.example.librarymanagmentsystem.dto.LibraryBookDto;
+import com.example.librarymanagmentsystem.dto.LibraryDto;
+import com.example.librarymanagmentsystem.service.BookService;
 import com.example.librarymanagmentsystem.service.LibraryBookService;
+import com.example.librarymanagmentsystem.service.LibraryService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,12 @@ public class LibraryBookServiceTest {
 
     @Autowired
     private LibraryBookService libraryBookService;
+
+    @Autowired
+    private BookService bookService;
+
+    @Autowired
+    private LibraryService libraryService;
 
     @Test
     void getAllTest() {
@@ -49,19 +59,33 @@ public class LibraryBookServiceTest {
 
     @Test
     void addTest() {
+        List<BookDto> allBooks = bookService.getAll();
+        List<LibraryDto> allLibraries = libraryService.getAll();
+        Assertions.assertFalse(allBooks.isEmpty(), "Нет книг в базе для тестирования");
+        Assertions.assertFalse(allLibraries.isEmpty(), "Нет библиотек в базе для тестирования");
+
+        Long existingBookId = allBooks.get(0).getId();
+        Long existingLibraryId = allLibraries.get(0).getId();
+        String existingLibraryName = allLibraries.get(0).getName();
+        String existingBookTitle = allBooks.get(0).getTitle();
+
         LibraryBookDto dto = LibraryBookDto.builder()
-                .libraryId(1L)
-                .libraryName("Central Library")
-                .bookId(1L)
-                .bookTitle("Test Book")
+                .libraryId(existingLibraryId)
+                .libraryName(existingLibraryName)
+                .bookId(existingBookId)
+                .bookTitle(existingBookTitle)
                 .quantity(5)
                 .shelfCode("Z9")
                 .build();
 
         libraryBookService.addLibraryBook(dto);
-
         List<LibraryBookDto> libraryBooks = libraryBookService.getAll();
-        Assertions.assertTrue(libraryBooks.stream().anyMatch(lb -> "Z9".equals(lb.getShelfCode())));
+        Assertions.assertTrue(
+                libraryBooks.stream()
+                        .anyMatch(lb -> "Z9".equals(lb.getShelfCode()) &&
+                                existingBookId.equals(lb.getBookId()) &&
+                                existingLibraryId.equals(lb.getLibraryId()))
+        );
     }
 
     @Test

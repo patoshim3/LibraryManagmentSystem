@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-import java.util.Random;
 
 @SpringBootTest
 public class LibraryServiceTest {
@@ -31,8 +30,9 @@ public class LibraryServiceTest {
 
     @Test
     void getByIdTest() {
-        Random random = new Random();
-        Long id = libraryService.getAll().get(random.nextInt(libraryService.getAll().size())).getId();
+        List<LibraryDto> all = libraryService.getAll();
+        int randomIndex = (int) (Math.random() * all.size());
+        Long id = all.get(randomIndex).getId();
 
         LibraryDto dto = libraryService.getById(id);
         Assertions.assertNotNull(dto);
@@ -43,21 +43,33 @@ public class LibraryServiceTest {
     }
 
     @Test
-    void addTest() {
+    void addAndDeleteTest() {
+        String uniqueName = "Test Library " + System.currentTimeMillis();
+
         LibraryDto dto = new LibraryDto();
-        dto.setName("Test Library");
+        dto.setName(uniqueName);
         dto.setAddress("Test Address");
 
         libraryService.addLibrary(dto);
 
-        List<LibraryDto> libraries = libraryService.getAll();
-        Assertions.assertTrue(libraries.stream().anyMatch(l -> l.getName().equals("Test Library")));
+        List<LibraryDto> allAfterAdd = libraryService.getAll();
+        LibraryDto created = allAfterAdd.stream()
+                .filter(l -> uniqueName.equals(l.getName()))
+                .findFirst()
+                .orElse(null);
+
+        Assertions.assertNotNull(created);
+        Long createdId = created.getId();
+
+        Assertions.assertTrue(libraryService.deleteLibrary(createdId));
+        Assertions.assertNull(libraryService.getById(createdId));
     }
 
     @Test
     void updateTest() {
-        Random random = new Random();
-        Long id = libraryService.getAll().get(random.nextInt(libraryService.getAll().size())).getId();
+        List<LibraryDto> all = libraryService.getAll();
+        int randomIndex = (int) (Math.random() * all.size());
+        Long id = all.get(randomIndex).getId();
 
         LibraryDto dto = new LibraryDto();
         dto.setName("Updated Library");
@@ -68,14 +80,5 @@ public class LibraryServiceTest {
         LibraryDto updated = libraryService.getById(id);
         Assertions.assertEquals("Updated Library", updated.getName());
         Assertions.assertEquals("Updated Address", updated.getAddress());
-    }
-
-    @Test
-    void deleteTest() {
-        Random random = new Random();
-        Long id = libraryService.getAll().get(random.nextInt(libraryService.getAll().size())).getId();
-
-        Assertions.assertTrue(libraryService.deleteLibrary(id));
-        Assertions.assertNull(libraryService.getById(id));
     }
 }
