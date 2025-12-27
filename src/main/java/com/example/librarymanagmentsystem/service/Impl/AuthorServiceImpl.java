@@ -42,10 +42,10 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Boolean deleteAuthor(Long id) {
-        if (authorRepository.existsById(id)){
+        if (authorRepository.existsById(id)) {
             authorRepository.deleteById(id);
             return true;
         }
-        return false;
+        throw new IllegalArgumentException("Автор с id " + id + " не найден");
     }
 }

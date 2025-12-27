@@ -1,9 +1,13 @@
 package com.example.librarymanagmentsystem.service.Impl;
 
+import com.example.librarymanagmentsystem.Model.Book;
+import com.example.librarymanagmentsystem.Model.Library;
 import com.example.librarymanagmentsystem.Model.LibraryBook;
 import com.example.librarymanagmentsystem.dto.LibraryBookDto;
 import com.example.librarymanagmentsystem.mapper.LibraryBookMapper;
+import com.example.librarymanagmentsystem.repository.BookRepository;
 import com.example.librarymanagmentsystem.repository.LibraryBookRepository;
+import com.example.librarymanagmentsystem.repository.LibraryRepository;
 import com.example.librarymanagmentsystem.service.LibraryBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,8 @@ public class LibraryBookServiceImpl implements LibraryBookService {
 
     private final LibraryBookRepository libraryBookRepository;
     private final LibraryBookMapper libraryBookMapper;
+    private final LibraryRepository libraryRepository;
+    private final BookRepository bookRepository;
 
     @Override
     public List<LibraryBookDto> getAll() {
@@ -31,7 +37,18 @@ public class LibraryBookServiceImpl implements LibraryBookService {
 
     @Override
     public void addLibraryBook(LibraryBookDto dto) {
-        LibraryBook entity = libraryBookMapper.toEntity(dto);
+        LibraryBook entity = new LibraryBook();
+        Library library = libraryRepository.findById(dto.getLibraryId())
+                .orElseThrow(() -> new IllegalArgumentException("Библиотека с id " + dto.getLibraryId() + " не найдена"));
+
+        Book book = bookRepository.findById(dto.getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("Книга с id " + dto.getBookId() + " не найдена"));
+
+        entity.setLibrary(library);
+        entity.setBook(book);
+        entity.setQuantity(dto.getQuantity());
+        entity.setShelfCode(dto.getShelfCode());
+
         libraryBookRepository.save(entity);
     }
 

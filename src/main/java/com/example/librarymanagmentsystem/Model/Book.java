@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "books")
 @Getter
@@ -29,4 +32,8 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = true)
     private Author author;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<LibraryBook> libraryBooks = new HashSet<>();
+
 }

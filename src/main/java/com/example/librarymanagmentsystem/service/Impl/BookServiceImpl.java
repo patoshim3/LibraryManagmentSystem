@@ -35,6 +35,14 @@ public class BookServiceImpl implements BookService {
     @Override
     public void addBook(BookDto dto) {
         Book book = bookMapper.toEntity(dto);
+        if (dto.getAuthorId() != null) {
+            Author author = authorRepository.findById(dto.getAuthorId())
+                    .orElseThrow(() -> new IllegalArgumentException("Автор с id " + dto.getAuthorId() + " не найден"));
+            book.setAuthor(author);
+        } else {
+            book.setAuthor(null);
+        }
+
         bookRepository.save(book);
     }
 
@@ -42,20 +50,25 @@ public class BookServiceImpl implements BookService {
     public void updateBook(Long id, BookDto dto) {
         Book existing = bookRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Книга с id " + id + " не найдена"));
+        existing.setTitle(dto.getTitle());
+        existing.setIsbn(dto.getIsbn());
+        existing.setPublicationYear(dto.getPublicationYear());
         if (dto.getAuthorId() != null) {
             Author author = authorRepository.findById(dto.getAuthorId())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Автор с id " + dto.getAuthorId() + " не найден"));
+                    .orElseThrow(() -> new IllegalArgumentException("Автор с id " + dto.getAuthorId() + " не найден"));
             existing.setAuthor(author);
+        } else {
+            existing.setAuthor(null);
         }
-        bookMapper.updateEntityFromDto(dto, existing);
         bookRepository.save(existing);
     }
 
     @Override
     public boolean deleteBook(Long id) {
-        if (bookRepository.existsById(id)) {
-            bookRepository.deleteById(id);
+        Book book = bookRepository.findById(id).orElse(null);
+        if (book != null) {
+            book.setAuthor(null);
+            bookRepository.delete(book);
             return true;
         }
         return false;
