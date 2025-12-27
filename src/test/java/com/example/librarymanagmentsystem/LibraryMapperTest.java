@@ -3,88 +3,92 @@ package com.example.librarymanagmentsystem;
 import com.example.librarymanagmentsystem.Model.Library;
 import com.example.librarymanagmentsystem.dto.LibraryDto;
 import com.example.librarymanagmentsystem.mapper.LibraryMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
-public class LibraryMapperTest {
+class LibraryMapperTest {
 
     @Autowired
     private LibraryMapper libraryMapper;
 
+    private Library createLibrary(Long id, String name, String address) {
+        Library library = new Library();
+        library.setId(id);
+        library.setName(name);
+        library.setAddress(address);
+        library.setLibraryBooks(new HashSet<>());
+        return library;
+    }
+
     @Test
     void convertEntityToDtoTest() {
-        Library entityLibrary = new Library(1L, "Central Library", "Main Street 123", null);
-        LibraryDto dtoLibrary = libraryMapper.toDto(entityLibrary);
+        Library entity = createLibrary(1L, "Central Library", "Main Street 123");
 
-        Assertions.assertNotNull(dtoLibrary);
-        Assertions.assertNotNull(dtoLibrary.getId());
-        Assertions.assertNotNull(dtoLibrary.getName());
-        Assertions.assertNotNull(dtoLibrary.getAddress());
+        LibraryDto dto = libraryMapper.toDto(entity);
 
-        Assertions.assertEquals(entityLibrary.getId(), dtoLibrary.getId());
-        Assertions.assertEquals(entityLibrary.getName(), dtoLibrary.getName());
-        Assertions.assertEquals(entityLibrary.getAddress(), dtoLibrary.getAddress());
+        assertEquals(1L, dto.getId());
+        assertEquals("Central Library", dto.getName());
+        assertEquals("Main Street 123", dto.getAddress());
     }
 
     @Test
     void convertDtoToEntityTest() {
-        LibraryDto libraryDto = LibraryDto.builder()
+        LibraryDto dto = LibraryDto.builder()
                 .id(1L)
                 .name("Central Library")
                 .address("Main Street 123")
                 .build();
 
-        Library library = libraryMapper.toEntity(libraryDto);
+        Library entity = libraryMapper.toEntity(dto);
 
-        Assertions.assertNotNull(library);
-        Assertions.assertNotNull(library.getId());
-        Assertions.assertNotNull(library.getName());
-        Assertions.assertNotNull(library.getAddress());
-
-        Assertions.assertEquals(libraryDto.getId(), library.getId());
-        Assertions.assertEquals(libraryDto.getName(), library.getName());
-        Assertions.assertEquals(libraryDto.getAddress(), library.getAddress());
+        assertEquals(1L, entity.getId());
+        assertEquals("Central Library", entity.getName());
+        assertEquals("Main Street 123", entity.getAddress());
+        assertNotNull(entity.getLibraryBooks());
+        assertTrue(entity.getLibraryBooks().isEmpty());
     }
 
     @Test
     void convertEntityListToDtoListTest() {
-        List<Library> libraryList = new ArrayList<>();
-        libraryList.add(new Library(1L, "Library1", "Address1", null));
-        libraryList.add(new Library(2L, "Library2", "Address2", null));
-        libraryList.add(new Library(3L, "Library3", "Address3", null));
+        List<Library> entities = List.of(
+                createLibrary(1L, "Library1", "Address1"),
+                createLibrary(2L, "Library2", "Address2"),
+                createLibrary(3L, "Library3", "Address3")
+        );
 
-        List<LibraryDto> libraryDtoList = libraryMapper.toDtoList(libraryList);
+        List<LibraryDto> dtos = libraryMapper.toDtoList(entities);
 
-        Assertions.assertNotNull(libraryDtoList);
-        Assertions.assertEquals(libraryList.size(), libraryDtoList.size());
+        assertEquals(3, dtos.size());
 
-        for (int i = 0; i < libraryList.size(); i++) {
-            Library library = libraryList.get(i);
-            LibraryDto libraryDto = libraryDtoList.get(i);
+        for (int i = 0; i < entities.size(); i++) {
+            Library entity = entities.get(i);
+            LibraryDto dto = dtos.get(i);
 
-            Assertions.assertEquals(library.getId(), libraryDto.getId());
-            Assertions.assertEquals(library.getName(), libraryDto.getName());
-            Assertions.assertEquals(library.getAddress(), libraryDto.getAddress());
+            assertEquals(entity.getId(), dto.getId());
+            assertEquals(entity.getName(), dto.getName());
+            assertEquals(entity.getAddress(), dto.getAddress());
         }
     }
 
     @Test
     void updateEntityFromDtoTest() {
-        Library library = new Library(1L, "Old Name", "Old Address", null);
+        Library entity = createLibrary(1L, "Old Name", "Old Address");
+
         LibraryDto dto = LibraryDto.builder()
                 .name("New Name")
-                .address(null) // address остаётся прежним
+                .address(null)
                 .build();
 
-        libraryMapper.updateEntityFromDto(dto, library);
+        libraryMapper.updateEntityFromDto(dto, entity);
 
-        Assertions.assertEquals("New Name", library.getName());
-        Assertions.assertEquals("Old Address", library.getAddress()); // не перезаписалось null
+        assertEquals("New Name", entity.getName());
+        assertEquals("Old Address", entity.getAddress());
     }
 }

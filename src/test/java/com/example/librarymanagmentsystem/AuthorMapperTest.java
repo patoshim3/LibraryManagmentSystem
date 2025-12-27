@@ -19,17 +19,17 @@ public class AuthorMapperTest {
 
     @Test
     void convertEntityToDtoTest() {
-        Author entityAuthor = new Author(1L, "Author1", "Biography of Author1");
-        AuthorDto dtoAuthor = authorMapper.toDto(entityAuthor);
+        Author author = new Author(1L, "Author1", "Biography of Author1", new ArrayList<>());
+        AuthorDto dtoAuthor = authorMapper.toDto(author);
 
         Assertions.assertNotNull(dtoAuthor);
         Assertions.assertNotNull(dtoAuthor.getId());
         Assertions.assertNotNull(dtoAuthor.getName());
         Assertions.assertNotNull(dtoAuthor.getAuthorBiography());
 
-        Assertions.assertEquals(entityAuthor.getId(), dtoAuthor.getId());
-        Assertions.assertEquals(entityAuthor.getName(), dtoAuthor.getName());
-        Assertions.assertEquals(entityAuthor.getAuthorBiography(), dtoAuthor.getAuthorBiography());
+        Assertions.assertEquals(author.getId(), dtoAuthor.getId());
+        Assertions.assertEquals(author.getName(), dtoAuthor.getName());
+        Assertions.assertEquals(author.getAuthorBiography(), dtoAuthor.getAuthorBiography());
     }
 
     @Test
@@ -55,9 +55,9 @@ public class AuthorMapperTest {
     @Test
     void convertEntityListToDtoList() {
         List<Author> authorList = new ArrayList<>();
-        authorList.add(new Author(1L, "Author1", "Biography of Author1"));
-        authorList.add(new Author(2L, "Author2", "Biography of Author2"));
-        authorList.add(new Author(3L, "Author3", "Biography of Author3"));
+        authorList.add(new Author(1L, "Author1", "Biography of Author1", new ArrayList<>()));
+        authorList.add(new Author(2L, "Author2", "Biography of Author2", new ArrayList<>()));
+        authorList.add(new Author(3L, "Author3", "Biography of Author3", new ArrayList<>()));
 
         List<AuthorDto> authorDtoList = authorMapper.toDtoList(authorList);
 

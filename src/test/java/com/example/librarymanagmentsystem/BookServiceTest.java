@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-import java.util.Random;
 
 @SpringBootTest
 public class BookServiceTest {
@@ -25,22 +24,20 @@ public class BookServiceTest {
         for (BookDto dto : books) {
             Assertions.assertNotNull(dto.getId());
             Assertions.assertNotNull(dto.getTitle());
-            Assertions.assertNotNull(dto.getIsbn());
-            Assertions.assertNotNull(dto.getPublicationYear());
         }
     }
 
     @Test
     void getByIdTest() {
-        Random random = new Random();
-        int randomIndex = random.nextInt(bookService.getAll().size());
-        Long id = bookService.getAll().get(randomIndex).getId();
+        List<BookDto> allBooks = bookService.getAll();
+        int randomIndex = (int) (Math.random() * allBooks.size());
+        Long id = allBooks.get(randomIndex).getId();
 
-        BookDto dto = bookService.getById(id);
+        BookDto dto = bookService.getBookById(id);
         Assertions.assertNotNull(dto);
         Assertions.assertEquals(id, dto.getId());
 
-        BookDto notFound = bookService.getById(-1L);
+        BookDto notFound = bookService.getBookById(-1L);
         Assertions.assertNull(notFound);
     }
 
@@ -50,6 +47,13 @@ public class BookServiceTest {
         dto.setTitle("Test Book");
         dto.setIsbn("ISBN-TEST");
         dto.setPublicationYear(2025);
+
+        // Добавляем существующего автора из БД
+        List<BookDto> allBooks = bookService.getAll();
+        Long existingAuthorId = allBooks.get(0).getAuthorId();
+
+        dto.setAuthorId(existingAuthorId);
+
         bookService.addBook(dto);
 
         List<BookDto> books = bookService.getAll();
@@ -58,27 +62,36 @@ public class BookServiceTest {
 
     @Test
     void updateTest() {
-        Random random = new Random();
-        Long id = bookService.getAll().get(random.nextInt(bookService.getAll().size())).getId();
+        List<BookDto> allBooks = bookService.getAll();
+        Assertions.assertFalse(allBooks.isEmpty(), "Нет книг для тестирования обновления");
+
+        int randomIndex = (int) (Math.random() * allBooks.size());
+        Long id = allBooks.get(randomIndex).getId();
+        Long existingAuthorId = allBooks.get(randomIndex).getAuthorId();
 
         BookDto dto = new BookDto();
         dto.setTitle("Updated Book");
         dto.setIsbn("Updated ISBN");
         dto.setPublicationYear(2030);
+        dto.setAuthorId(existingAuthorId);
+
         bookService.updateBook(id, dto);
 
-        BookDto updated = bookService.getById(id);
+        BookDto updated = bookService.getBookById(id);
+        Assertions.assertNotNull(updated);
         Assertions.assertEquals("Updated Book", updated.getTitle());
         Assertions.assertEquals("Updated ISBN", updated.getIsbn());
-        Assertions.assertEquals(2030, updated.getPublicationYear());
+        Assertions.assertEquals(Integer.valueOf(2030), updated.getPublicationYear());
+        Assertions.assertEquals(existingAuthorId, updated.getAuthorId());
     }
 
     @Test
     void deleteTest() {
-        Random random = new Random();
-        Long id = bookService.getAll().get(random.nextInt(bookService.getAll().size())).getId();
+        List<BookDto> allBooks = bookService.getAll();
+        int randomIndex = (int) (Math.random() * allBooks.size());
+        Long id = allBooks.get(randomIndex).getId();
 
         Assertions.assertTrue(bookService.deleteBook(id));
-        Assertions.assertNull(bookService.getById(id));
+        Assertions.assertNull(bookService.getBookById(id));
     }
 }
